@@ -31,4 +31,4 @@ The platform also includes emergency support features to help users quickly acce
 * REST APIs
 * Git & GitHub
 
-**Note:** MediGuideAI is intended for educational and informational purposes and does not replace professional medical diagnosis or treatment.
+
