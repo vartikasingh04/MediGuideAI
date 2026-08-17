@@ -1,92 +1,85 @@
-import { useState } from "react";
 import {
-  AlertTriangle,
   ArrowLeft,
-  Hospital,
   MapPin,
-  Navigation,
   Phone,
+  Ambulance,
+  Hospital,
   ShieldAlert,
-  Stethoscope,
+  Navigation,
+  HeartPulse,
 } from "lucide-react";
 
 function Emergency() {
-  const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [locationError, setLocationError] = useState("");
 
-  const getLocation = () => {
-    setLoading(true);
-    setLocationError("");
+  // ==========================================
+  // CALL AMBULANCE - 108
+  // ==========================================
 
-    if (!navigator.geolocation) {
-      setLocationError(
-        "Geolocation is not supported by this browser."
-      );
-      setLoading(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-
-        setLoading(false);
-      },
-      (error) => {
-        setLoading(false);
-
-        if (error.code === 1) {
-          setLocationError(
-            "Location permission was denied. Please allow location access."
-          );
-        } else {
-          setLocationError(
-            "Unable to detect your location. Please try again."
-          );
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
-    );
+  const callAmbulance = () => {
+    window.location.href = "tel:108";
   };
 
-  const openHospitals = () => {
-    if (!location) {
-      alert("Please detect your location first.");
-      return;
+  // ==========================================
+  // GENERAL EMERGENCY - 112
+  // ==========================================
+
+  const callEmergency = () => {
+    window.location.href = "tel:112";
+  };
+
+  // ==========================================
+  // FIND NEARBY HOSPITAL
+  // ==========================================
+
+  const openMaps = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } =
+            position.coords;
+
+          window.open(
+            `https://www.google.com/maps/search/hospitals/@${latitude},${longitude},14z`,
+            "_blank"
+          );
+        },
+        () => {
+          window.open(
+            "https://www.google.com/maps/search/emergency+hospital+near+me",
+            "_blank"
+          );
+        }
+      );
+    } else {
+      window.open(
+        "https://www.google.com/maps/search/emergency+hospital+near+me",
+        "_blank"
+      );
     }
-
-    const mapsUrl =
-      `https://www.google.com/maps/search/hospitals/` +
-      `@${location.latitude},${location.longitude},14z`;
-
-    window.open(mapsUrl, "_blank");
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* HEADER */}
+      {/* ======================================
+          HEADER
+      ====================================== */}
 
-      <header className="border-b border-red-100 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center px-6 py-4">
+      <header className="border-b border-gray-200 bg-white">
+
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
 
           <a
-            href="/"
+            href="/dashboard"
             className="flex items-center gap-3"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <Stethoscope size={22} />
+
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md">
+              <HeartPulse size={24} />
             </div>
 
             <div>
+
               <h1 className="font-bold text-gray-900">
                 MediGuide{" "}
                 <span className="text-blue-600">
@@ -95,208 +88,137 @@ function Emergency() {
               </h1>
 
               <p className="text-xs text-gray-500">
-                Medical Assistance
+                Smart Health Assistant
               </p>
+
             </div>
+
+          </a>
+
+
+          <a
+            href="/dashboard"
+            className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100"
+          >
+            <ArrowLeft size={17} />
+            Dashboard
           </a>
 
         </div>
+
       </header>
 
 
-      {/* MAIN */}
+      {/* ======================================
+          MAIN
+      ====================================== */}
 
-      <main className="mx-auto max-w-5xl px-6 py-10">
-
-        {/* BACK */}
-
-        <button
-          onClick={() => window.history.back()}
-          className="mb-6 flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-blue-600"
-        >
-          <ArrowLeft size={18} />
-          Back
-        </button>
+      <main className="mx-auto max-w-6xl px-6 py-10">
 
 
-        {/* EMERGENCY HERO */}
+        {/* ======================================
+            HERO
+        ====================================== */}
 
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-red-600 to-orange-500 p-8 text-white shadow-2xl md:p-12">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-600 via-red-500 to-orange-500 p-8 text-white shadow-xl md:p-12">
 
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10" />
 
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/20">
+          <div className="absolute -bottom-32 right-20 h-72 w-72 rounded-full bg-white/5" />
 
-              <ShieldAlert size={42} />
+
+          <div className="relative">
+
+            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15">
+
+              <ShieldAlert size={34} />
 
             </div>
 
-            <h2 className="mt-6 text-3xl font-bold md:text-5xl">
-              Emergency Assistance
-            </h2>
 
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-red-50 md:text-lg">
-              If you are experiencing a serious or
-              life-threatening medical situation, seek
-              professional medical help immediately.
+            <p className="text-sm font-bold uppercase tracking-widest text-red-100">
+              Emergency Assistance
             </p>
 
-          </div>
 
-        </section>
+            <h2 className="mt-2 text-3xl font-bold md:text-5xl">
+              Need Emergency Help?
+            </h2>
 
 
-        {/* WARNING */}
+            <p className="mt-5 max-w-2xl text-base leading-7 text-red-50 md:text-lg">
+              If you or someone around you is
+              experiencing a serious or
+              life-threatening emergency, contact
+              emergency services immediately.
+            </p>
 
-        <section className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-6">
 
-          <div className="flex items-start gap-4">
+            {/* AMBULANCE 108 */}
 
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
+            <button
+              type="button"
+              onClick={callAmbulance}
+              className="mt-8 inline-flex items-center gap-3 rounded-xl bg-white px-7 py-4 text-lg font-bold text-red-600 shadow-lg transition hover:-translate-y-1 hover:bg-red-50"
+            >
 
-              <AlertTriangle size={25} />
+              <Ambulance size={25} />
 
-            </div>
+              Call Ambulance — 108
 
-            <div>
-
-              <h3 className="font-bold text-red-900">
-                Do not delay emergency care
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-red-800">
-                MediGuide AI cannot diagnose or treat medical
-                emergencies. If symptoms are severe or rapidly
-                getting worse, contact appropriate emergency
-                medical services or go to the nearest emergency
-                department.
-              </p>
-
-            </div>
+            </button>
 
           </div>
 
         </section>
 
 
-        {/* LOCATION */}
+        {/* ======================================
+            EMERGENCY SERVICES
+        ====================================== */}
 
-        <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="mt-8">
 
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
 
-            <div>
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-4">
 
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
 
-                  <MapPin size={22} />
+                  <Phone size={23} />
 
                 </div>
 
+
                 <div>
 
-                  <h3 className="font-bold text-gray-900">
-                    Find nearby medical help
+                  <h3 className="text-lg font-bold text-red-900">
+                    National Emergency Number
                   </h3>
 
-                  <p className="text-sm text-gray-500">
-                    Use your current location to find hospitals.
+                  <p className="mt-1 text-sm leading-6 text-red-700">
+                    For police, fire, medical and other
+                    emergency assistance.
                   </p>
 
                 </div>
 
               </div>
 
-            </div>
 
-
-            <button
-              onClick={getLocation}
-              disabled={loading}
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-
-              <MapPin size={18} />
-
-              {loading
-                ? "Detecting Location..."
-                : "Use My Location"}
-
-            </button>
-
-          </div>
-
-
-          {/* LOCATION SUCCESS */}
-
-          {location && (
-
-            <div className="mt-5 rounded-xl bg-emerald-50 p-4">
-
-              <p className="font-semibold text-emerald-800">
-                ✓ Location detected
-              </p>
-
-              <p className="mt-1 break-all text-xs text-emerald-700">
-                Latitude: {location.latitude}
-                <br />
-                Longitude: {location.longitude}
-              </p>
-
-            </div>
-
-          )}
-
-
-          {/* LOCATION ERROR */}
-
-          {locationError && (
-
-            <div className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-700">
-
-              {locationError}
-
-            </div>
-
-          )}
-
-        </section>
-
-
-        {/* HOSPITAL */}
-
-        <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-
-          <div className="flex items-start gap-4">
-
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-
-              <Hospital size={24} />
-
-            </div>
-
-            <div className="flex-1">
-
-              <h3 className="text-xl font-bold text-gray-900">
-                Find a nearby hospital
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-gray-600">
-                Open a hospital search centered around your
-                current location.
-              </p>
-
+              {/* 112 */}
 
               <button
-                onClick={openHospitals}
-                className="mt-5 flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+                type="button"
+                onClick={callEmergency}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3 font-bold text-white transition hover:bg-red-700"
               >
 
-                <Navigation size={18} />
+                <Phone size={18} />
 
-                Open Hospitals in Maps
+                Call 112
 
               </button>
 
@@ -307,84 +229,299 @@ function Emergency() {
         </section>
 
 
-        {/* CALL HELP */}
+        {/* ======================================
+            QUICK ACTIONS
+        ====================================== */}
 
-        <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="mt-10">
 
-          <div className="flex items-start gap-4">
+          <div className="mb-5">
 
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">
-
-              <Phone size={23} />
-
-            </div>
-
-            <div>
-
-              <h3 className="text-lg font-bold text-gray-900">
-                Need immediate assistance?
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-gray-600">
-                Contact your local emergency medical service
-                or ask someone nearby to help you reach
-                appropriate medical care.
-              </p>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* DISCLAIMER */}
-
-        <section className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
-
-          <div className="flex items-start gap-3">
-
-            <AlertTriangle
-              size={20}
-              className="mt-0.5 shrink-0 text-amber-600"
-            />
-
-            <p className="text-sm leading-6 text-amber-800">
-
-              <strong>Important:</strong> MediGuide AI provides
-              general health information and is not a substitute
-              for professional medical diagnosis or emergency
-              treatment.
-
+            <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">
+              Quick Help
             </p>
 
+            <h3 className="mt-1 text-2xl font-bold text-gray-900">
+              Find Emergency Assistance
+            </h3>
+
+          </div>
+
+
+          <div className="grid gap-5 md:grid-cols-3">
+
+
+            {/* ==================================
+                AMBULANCE
+            ================================== */}
+
+            <button
+              type="button"
+              onClick={callAmbulance}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-lg"
+            >
+
+              <div className="flex h-13 w-13 items-center justify-center rounded-xl bg-red-100 text-red-600">
+
+                <Ambulance size={26} />
+
+              </div>
+
+
+              <h4 className="mt-5 text-lg font-bold text-gray-900">
+                Ambulance
+              </h4>
+
+
+              <p className="mt-2 text-sm leading-6 text-gray-500">
+                Call an ambulance for immediate
+                medical emergency assistance.
+              </p>
+
+
+              <div className="mt-5 flex items-center gap-2 font-semibold text-red-600">
+
+                <Phone size={16} />
+
+                Call 108
+
+              </div>
+
+            </button>
+
+
+            {/* ==================================
+                HOSPITAL
+            ================================== */}
+
+            <button
+              type="button"
+              onClick={openMaps}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
+            >
+
+              <div className="flex h-13 w-13 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+
+                <Hospital size={26} />
+
+              </div>
+
+
+              <h4 className="mt-5 text-lg font-bold text-gray-900">
+                Nearby Hospitals
+              </h4>
+
+
+              <p className="mt-2 text-sm leading-6 text-gray-500">
+                Find emergency hospitals near your
+                current location.
+              </p>
+
+
+              <div className="mt-5 flex items-center gap-2 font-semibold text-blue-600">
+
+                <MapPin size={16} />
+
+                Find Hospital
+
+              </div>
+
+            </button>
+
+
+            {/* ==================================
+                LOCATION
+            ================================== */}
+
+            <button
+              type="button"
+              onClick={openMaps}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg"
+            >
+
+              <div className="flex h-13 w-13 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+
+                <Navigation size={26} />
+
+              </div>
+
+
+              <h4 className="mt-5 text-lg font-bold text-gray-900">
+                Get Directions
+              </h4>
+
+
+              <p className="mt-2 text-sm leading-6 text-gray-500">
+                Use your location to find the nearest
+                emergency medical facility.
+              </p>
+
+
+              <div className="mt-5 flex items-center gap-2 font-semibold text-emerald-600">
+
+                <Navigation size={16} />
+
+                Open Maps
+
+              </div>
+
+            </button>
+
           </div>
 
         </section>
 
 
-        {/* FOOTER */}
+        {/* ======================================
+            IMPORTANT STEPS
+        ====================================== */}
 
-        <div className="mt-8 flex justify-between">
+        <section className="mt-10">
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+
+            <div className="flex items-center gap-3">
+
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+
+                <ShieldAlert size={22} />
+
+              </div>
+
+
+              <div>
+
+                <h3 className="text-xl font-bold text-gray-900">
+                  While Waiting for Help
+                </h3>
+
+                <p className="text-sm text-gray-500">
+                  Follow appropriate emergency guidance.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+
+
+              <div className="rounded-xl bg-gray-50 p-5">
+
+                <p className="font-semibold text-gray-900">
+                  01. Stay with the person
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  If possible, stay with an unconscious
+                  or seriously ill person.
+                </p>
+
+              </div>
+
+
+              <div className="rounded-xl bg-gray-50 p-5">
+
+                <p className="font-semibold text-gray-900">
+                  02. Call emergency services
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  Clearly explain the situation and
+                  provide your location.
+                </p>
+
+              </div>
+
+
+              <div className="rounded-xl bg-gray-50 p-5">
+
+                <p className="font-semibold text-gray-900">
+                  03. Follow professional instructions
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  Follow instructions provided by
+                  emergency professionals.
+                </p>
+
+              </div>
+
+
+              <div className="rounded-xl bg-gray-50 p-5">
+
+                <p className="font-semibold text-gray-900">
+                  04. Do not delay medical care
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  Do not rely only on an AI assessment
+                  during an emergency.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* ======================================
+            DISCLAIMER
+        ====================================== */}
+
+        <section className="mt-8">
+
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+
+            <div className="flex items-start gap-3">
+
+              <HeartPulse
+                size={21}
+                className="mt-0.5 shrink-0 text-amber-600"
+              />
+
+
+              <div>
+
+                <h3 className="font-bold text-amber-900">
+                  Important
+                </h3>
+
+                <p className="mt-1 text-sm leading-6 text-amber-800">
+                  MediGuide AI provides general health
+                  information and is not a replacement
+                  for professional medical care. In a
+                  serious emergency, contact emergency
+                  services immediately.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* ======================================
+            BACK TO DASHBOARD
+        ====================================== */}
+
+        <div className="mt-8">
 
           <a
-            href="/medical-help"
-            className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            href="/dashboard"
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-3 font-semibold text-gray-600 transition hover:bg-gray-200"
           >
 
-            <ArrowLeft size={17} />
+            <ArrowLeft size={18} />
 
-            Medical Help
-
-          </a>
-
-
-          <a
-            href="/"
-            className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-
-            Home
+            Back to Dashboard
 
           </a>
 

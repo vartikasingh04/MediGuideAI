@@ -4,28 +4,31 @@ const router = express.Router();
 
 const {
   createAssessment,
-  updateSymptoms,
   getAssessments,
+  getAssessmentById,
+  updateSymptoms,
+  updateSymptomDetails,
 } = require("../controllers/assessmentController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
-router.post(
-  "/",
-  authMiddleware,
-  createAssessment
-);
+// Create
+router.post("/", authMiddleware, createAssessment);
 
+// Get all
+router.get("/", authMiddleware, getAssessments);
+
+// Get one
+router.get("/:id", authMiddleware, getAssessmentById);
+
+// Update symptoms
+router.put("/:id/symptoms", authMiddleware, updateSymptoms);
+
+// Update symptom details
 router.put(
-  "/:id/symptoms",
+  "/:id/symptom-details",
   authMiddleware,
-  updateSymptoms
-);
-
-router.get(
-  "/",
-  authMiddleware,
-  getAssessments
+  updateSymptomDetails
 );
 
 module.exports = router;

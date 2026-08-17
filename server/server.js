@@ -2,38 +2,31 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
-// ==========================================
-// LOAD ENVIRONMENT VARIABLES FIRST
-// ==========================================
-
 dotenv.config();
+
+const connectDB = require("./config/db");
+
+const authRoutes = require("./routes/authRouter");
+const assessmentRoutes = require("./routes/assessmentRouter");
+
+const app = express();
 
 // ==========================================
 // DATABASE
 // ==========================================
 
-const connectDB = require("./config/db");
-
-// ==========================================
-// ROUTES
-// ==========================================
-
-const authRoutes = require("./routes/authRouter");
-const assessmentRoutes = require("./routes/assessmentRouter");
-
-// ==========================================
-// APP
-// ==========================================
-
-const app = express();
+connectDB();
 
 // ==========================================
 // MIDDLEWARE
 // ==========================================
 
+const allowedOrigin =
+  process.env.FRONTEND_URL || "http://localhost:5173";
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigin,
     credentials: true,
   })
 );
@@ -47,12 +40,6 @@ app.use(
 );
 
 // ==========================================
-// DATABASE CONNECTION
-// ==========================================
-
-connectDB();
-
-// ==========================================
 // TEST ROUTE
 // ==========================================
 
@@ -64,28 +51,19 @@ app.get("/", (req, res) => {
 });
 
 // ==========================================
-// AUTH ROUTES
+// AUTH
 // ==========================================
-
-// POST /api/auth/register
-// POST /api/auth/login
 
 app.use("/api/auth", authRoutes);
 
 // ==========================================
-// ASSESSMENT ROUTES
+// ASSESSMENTS
 // ==========================================
-
-// POST /api/assessments
-// GET  /api/assessments
-// GET  /api/assessments/:id
-// PUT  /api/assessments/:id/symptoms
-// PUT  /api/assessments/:id/symptom-details
 
 app.use("/api/assessments", assessmentRoutes);
 
 // ==========================================
-// 404 ROUTE
+// 404
 // ==========================================
 
 app.use((req, res) => {
@@ -96,7 +74,7 @@ app.use((req, res) => {
 });
 
 // ==========================================
-// ERROR HANDLER
+// ERROR
 // ==========================================
 
 app.use((error, req, res, next) => {
@@ -109,11 +87,11 @@ app.use((error, req, res, next) => {
 });
 
 // ==========================================
-// START SERVER
+// SERVER
 // ==========================================
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -8,6 +8,8 @@ import Assessment from "./pages/Assessment";
 import Symptoms from "./pages/Symptoms";
 import SymptomDetails from "./pages/SymptomDetails";
 import AssessmentResult from "./pages/AssessmentResult";
+import Emergency from "./pages/Emergency";
+import History from "./pages/History";
 
 function App() {
   return (
@@ -35,7 +37,14 @@ function App() {
           path="/assessment/result"
           element={<AssessmentResult />}
         />
-
+<Route
+  path="/emergency"
+  element={<Emergency />}
+/>
+<Route
+  path="/history"
+  element={<History />}
+/>
         {/* Unknown URL */}
         <Route path="*" element={<Navigate to="/" replace />} />
 
