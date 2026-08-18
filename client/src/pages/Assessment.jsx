@@ -65,9 +65,9 @@ function Assessment() {
       // SEND TO BACKEND
       // ==========================================
 
-      const response = await fetch(
-        "http://localhost:5000/api/assessments",
-        {
+     const response = await fetch(
+  `${API_URL}/api/assessments`,
+  {
           method: "POST",
 
           headers: {

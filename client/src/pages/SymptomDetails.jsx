@@ -205,7 +205,7 @@ function SymptomDetails() {
       // ----------------------------------------
 
       const url =
-        `http://localhost:5000/api/assessments/${assessmentId}/symptom-details`;
+  `${API_URL}/api/assessments/${assessmentId}/symptom-details`;
 
       console.log(
         "API URL:",

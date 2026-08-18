@@ -105,16 +105,16 @@ function History() {
           return;
         }
 
-        const response = await fetch(
-          "http://localhost:5000/api/assessments",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+       const response = await fetch(
+  `${API_URL}/api/assessments`,
+  {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  }
+);
 
         const responseText = await response.text();
 
