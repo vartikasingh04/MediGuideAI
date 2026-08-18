@@ -1,6 +1,6 @@
 import { ArrowRight, HeartPulse, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
-
+import API_URL from "../api";
 function CTASection() {
   return (
     <section className="px-6 py-20">

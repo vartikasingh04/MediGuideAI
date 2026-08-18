@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
-
+import API_URL from "../api";
 function FeatureCard({ icon: Icon, title, description, iconClass }) {
   return (
     <motion.div

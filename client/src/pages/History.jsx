@@ -9,7 +9,7 @@ import {
   ShieldAlert,
   UserRound,
 } from "lucide-react";
-
+import API_URL from "../api";
 function History() {
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);

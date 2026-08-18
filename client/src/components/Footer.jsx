@@ -1,5 +1,5 @@
 import { HeartPulse, ArrowUp } from "lucide-react";
-
+import API_URL from "../api";
 function Footer() {
   const handleTop = () => {
     window.scrollTo({

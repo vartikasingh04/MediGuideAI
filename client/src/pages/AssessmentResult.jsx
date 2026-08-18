@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   UserRound,
 } from "lucide-react";
-
+import API_URL from "../api";
 function AssessmentResult() {
   const [assessment, setAssessment] = useState(null);
   const [loading, setLoading] = useState(true);

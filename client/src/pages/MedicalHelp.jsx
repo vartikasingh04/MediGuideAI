@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   Stethoscope,
 } from "lucide-react";
-
+import API_URL from "../api";
 function MedicalHelp() {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);

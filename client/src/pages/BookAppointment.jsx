@@ -7,7 +7,7 @@ import {
   Clock,
   UserRound,
 } from "lucide-react";
-
+import API_URL from "../api";
 function BookAppointment() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

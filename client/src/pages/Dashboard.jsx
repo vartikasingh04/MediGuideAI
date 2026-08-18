@@ -11,7 +11,7 @@ import {
   Stethoscope,
   UserRound,
 } from "lucide-react";
-
+import API_URL from "../api";
 function Dashboard() {
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);

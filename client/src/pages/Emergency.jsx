@@ -8,7 +8,7 @@ import {
   Navigation,
   HeartPulse,
 } from "lucide-react";
-
+import API_URL from "../api";
 function Emergency() {
 
   // ==========================================

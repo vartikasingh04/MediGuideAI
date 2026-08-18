@@ -1,6 +1,6 @@
 import { HeartPulse, Menu, X } from "lucide-react";
 import { useState } from "react";
-
+import API_URL from "../api";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 

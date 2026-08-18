@@ -4,7 +4,7 @@ import {
   Siren,
   History,
 } from "lucide-react";
-
+import API_URL from "../api";
 import FeatureCard from "./FeatureCard";
 
 const features = [

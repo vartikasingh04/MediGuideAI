@@ -6,7 +6,7 @@ import {
   HeartPulse,
   UserRound,
 } from "lucide-react";
-
+import API_URL from "../api";
 function Symptoms() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [loading, setLoading] = useState(false);

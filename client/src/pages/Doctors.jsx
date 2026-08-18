@@ -9,7 +9,7 @@ import {
   Star,
   Stethoscope,
 } from "lucide-react";
-
+import API_URL from "../api";
 const doctors = [
   {
     id: 1,

@@ -6,7 +6,7 @@ import HowItWorks from "../components/HowItWorks";
 import WhyChooseUs from "../components/WhyChooseUs";
 import CTASection from "../components/CTASection";
 import Footer from "../components/Footer";
-
+import API_URL from "../api";
 
 function LandingPage() {
   return (

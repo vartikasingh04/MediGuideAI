@@ -5,7 +5,7 @@ import {
   MapPinned,
   ArrowRight,
 } from "lucide-react";
-
+import API_URL from "../api";
 import { motion } from "framer-motion";
 
 const steps = [

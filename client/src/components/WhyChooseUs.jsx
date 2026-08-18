@@ -5,7 +5,7 @@ import {
   Smartphone,
   CheckCircle2,
 } from "lucide-react";
-
+import API_URL from "../api";
 import { motion } from "framer-motion";
 
 const benefits = [
