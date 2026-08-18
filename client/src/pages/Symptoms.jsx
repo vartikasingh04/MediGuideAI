@@ -139,7 +139,7 @@ function Symptoms() {
       // API REQUEST
       // ----------------------------------------
 
-      const response = await fetch(
+     const response = await fetch(
   `http://localhost:5000/api/assessments/${assessmentId}/symptoms`,
         {
           method: "PUT",
