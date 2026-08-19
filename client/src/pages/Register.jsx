@@ -7,7 +7,7 @@ import {
   Mail,
   UserRound,
 } from "lucide-react";
-
+import API_URL from "../api";
 function Register() {
   const navigate = useNavigate();
 
@@ -48,7 +48,7 @@ function Register() {
       // IMPORTANT:
       // Correct backend registration endpoint
       const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/auth/register`,
+  `${API_URL}/api/auth/register`,
   {
           method: "POST",
           headers: {
