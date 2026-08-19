@@ -1,25 +1,18 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
+const authRoutes = require("./routes/authRoutes");
+const assessmentRoutes = require("./routes/assessmentRoutes");
+
 dotenv.config();
-
-const connectDB = require("./config/db");
-
-const authRoutes = require("./routes/authRouter");
-const assessmentRoutes = require("./routes/assessmentRouter");
 
 const app = express();
 
-// ==========================================
-// DATABASE
-// ==========================================
-
-connectDB();
-
-// ==========================================
-// CORS
-// ==========================================
+// ===============================
+// CORS CONFIGURATION
+// ===============================
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -29,6 +22,8 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
+      // Allow requests without origin
+      // (Postman, server-to-server, etc.)
       if (!origin) {
         return callback(null, true);
       }
@@ -37,23 +32,13 @@ app.use(
         return callback(null, true);
       }
 
-      console.log("Blocked CORS origin:", origin);
-
-      return callback(
-        new Error("Not allowed by CORS")
-      );
+      console.log("Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
 
     credentials: true,
 
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS",
-    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
     allowedHeaders: [
       "Content-Type",
@@ -62,71 +47,92 @@ app.use(
   })
 );
 
-// ==========================================
+// ===============================
 // MIDDLEWARE
-// ==========================================
+// ===============================
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
-// ==========================================
-// TEST ROUTE
-// ==========================================
+// ===============================
+// HEALTH CHECK
+// ===============================
 
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "MediGuide AI API is running",
+    message: "MediGuideAI Backend is running",
   });
 });
 
-// ==========================================
-// AUTH
-// ==========================================
+// ===============================
+// API ROUTES
+// ===============================
 
 app.use("/api/auth", authRoutes);
+app.use("/api/assessment", assessmentRoutes);
 
-// ==========================================
-// ASSESSMENTS
-// ==========================================
-
-app.use("/api/assessments", assessmentRoutes);
-
-// ==========================================
-// 404
-// ==========================================
+// ===============================
+// 404 HANDLER
+// ===============================
 
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: `Route not found: ${req.method} ${req.originalUrl}`,
+    message: "Route not found",
+    path: req.originalUrl,
   });
 });
 
-// ==========================================
-// ERROR
-// ==========================================
+// ===============================
+// ERROR HANDLER
+// ===============================
 
-app.use((error, req, res, next) => {
-  console.error("Server error:", error);
+app.use((err, req, res, next) => {
+  console.error("SERVER ERROR:", err);
+
+  if (err.message === "Not allowed by CORS") {
+    return res.status(403).json({
+      success: false,
+      message: "CORS policy blocked this request",
+    });
+  }
 
   res.status(500).json({
     success: false,
     message: "Internal server error",
+    error:
+      process.env.NODE_ENV === "production"
+        ? undefined
+        : err.message,
   });
 });
 
-// ==========================================
-// SERVER
-// ==========================================
+// ===============================
+// MONGODB CONNECTION
+// ===============================
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is not defined");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+
+    console.log("MongoDB connected successfully");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("MongoDB connection failed:");
+    console.error(error.message);
+
+    process.exit(1);
+  }
+};
+
+connectDB();

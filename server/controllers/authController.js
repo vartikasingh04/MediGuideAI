@@ -9,86 +9,55 @@ const User = require("../models/User");
 
 const register = async (req, res) => {
   try {
+    console.log("REGISTER REQUEST:", req.body);
+
     const {
       name,
       email,
       password,
     } = req.body;
 
-    // --------------------------------------
-    // VALIDATION
-    // --------------------------------------
-
+    // Validate fields
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message:
-          "Name, email and password are required",
+        message: "Name, email and password are required",
       });
     }
 
-    if (password.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Password must be at least 6 characters",
-      });
-    }
-
-    const normalizedEmail =
-      email.trim().toLowerCase();
-
-    // --------------------------------------
-    // CHECK EXISTING USER
-    // --------------------------------------
-
-    const existingUser =
-      await User.findOne({
-        email: normalizedEmail,
-      });
+    // Check existing user
+    const existingUser = await User.findOne({
+      email: email.toLowerCase(),
+    });
 
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message:
-          "User already exists with this email",
+        message: "User already exists",
       });
     }
 
-    // --------------------------------------
-    // HASH PASSWORD
-    // --------------------------------------
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const hashedPassword =
-      await bcrypt.hash(password, 10);
-
-    // --------------------------------------
-    // CREATE USER
-    // --------------------------------------
-
+    // Create user
     const user = await User.create({
-      name: name.trim(),
-      email: normalizedEmail,
+      name,
+      email: email.toLowerCase(),
       password: hashedPassword,
     });
 
-    // --------------------------------------
-    // JWT
-    // --------------------------------------
-
+    // Create JWT
     const token = jwt.sign(
       {
-        userId: user._id.toString(),
+        id: user._id,
+        email: user.email,
       },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
     );
-
-    // --------------------------------------
-    // RESPONSE
-    // --------------------------------------
 
     return res.status(201).json({
       success: true,
@@ -103,15 +72,15 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(
-      "Register error:",
-      error
-    );
+    console.error("REGISTER ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Server error during registration",
+      message: "Server error during registration",
+      error:
+        process.env.NODE_ENV === "production"
+          ? undefined
+          : error.message,
     });
   }
 };
@@ -127,73 +96,46 @@ const login = async (req, res) => {
       password,
     } = req.body;
 
-    // --------------------------------------
-    // VALIDATION
-    // --------------------------------------
-
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message:
-          "Email and password are required",
+        message: "Email and password are required",
       });
     }
 
-    const normalizedEmail =
-      email.trim().toLowerCase();
-
-    // --------------------------------------
-    // FIND USER
-    // --------------------------------------
-
-    const user =
-      await User.findOne({
-        email: normalizedEmail,
-      });
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+    });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message:
-          "Invalid email or password",
+        message: "Invalid email or password",
       });
     }
 
-    // --------------------------------------
-    // CHECK PASSWORD
-    // --------------------------------------
-
-    const isPasswordValid =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.password
+    );
 
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message:
-          "Invalid email or password",
+        message: "Invalid email or password",
       });
     }
 
-    // --------------------------------------
-    // CREATE JWT
-    // --------------------------------------
-
     const token = jwt.sign(
       {
-        userId: user._id.toString(),
+        id: user._id,
+        email: user.email,
       },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
     );
-
-    // --------------------------------------
-    // RESPONSE
-    // --------------------------------------
 
     return res.status(200).json({
       success: true,
@@ -208,22 +150,14 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(
-      "Login error:",
-      error
-    );
+    console.error("LOGIN ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Server error during login",
+      message: "Server error during login",
     });
   }
 };
-
-// ==========================================
-// EXPORT
-// ==========================================
 
 module.exports = {
   register,
