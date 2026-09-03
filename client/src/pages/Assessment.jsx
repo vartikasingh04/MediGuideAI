@@ -5,7 +5,9 @@ import {
   HeartPulse,
   UserRound,
 } from "lucide-react";
+
 import API_URL from "../api";
+
 function Assessment() {
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
@@ -65,9 +67,9 @@ function Assessment() {
       // SEND TO BACKEND
       // ==========================================
 
-     const response = await fetch(
-  `${API_URL}/api/assessments`,
-  {
+      const response = await fetch(
+        `${API_URL}/api/assessment`,
+        {
           method: "POST",
 
           headers: {
@@ -119,6 +121,10 @@ function Assessment() {
         );
       }
 
+      // ==========================================
+      // SUCCESS
+      // ==========================================
+
       console.log(
         "Assessment created successfully:",
         data
@@ -145,6 +151,7 @@ function Assessment() {
 
       window.location.href =
         "/assessment/symptoms";
+
     } catch (error) {
       console.error(
         "Assessment error:",
@@ -155,6 +162,7 @@ function Assessment() {
         error.message ||
           "Unable to save assessment. Please try again."
       );
+
     } finally {
       setLoading(false);
     }

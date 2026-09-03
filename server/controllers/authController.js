@@ -9,13 +9,12 @@ const User = require("../models/User");
 
 const register = async (req, res) => {
   try {
-    console.log("REGISTER REQUEST:", req.body);
+    console.log("=================================");
+    console.log("REGISTER REQUEST");
+    console.log("Body:", req.body);
+    console.log("=================================");
 
-    const {
-      name,
-      email,
-      password,
-    } = req.body;
+    const { name, email, password } = req.body;
 
     // Validate fields
     if (!name || !email || !password) {
@@ -25,9 +24,22 @@ const register = async (req, res) => {
       });
     }
 
+    // Check JWT secret
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing in environment variables");
+
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error",
+      });
+    }
+
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check existing user
     const existingUser = await User.findOne({
-      email: email.toLowerCase(),
+      email: normalizedEmail,
     });
 
     if (existingUser) {
@@ -42,15 +54,17 @@ const register = async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
     });
+
+    console.log("User created:", user.email);
 
     // Create JWT
     const token = jwt.sign(
       {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
       },
       process.env.JWT_SECRET,
@@ -62,7 +76,6 @@ const register = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Registration successful",
-
       token,
 
       user: {
@@ -72,15 +85,14 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("REGISTER ERROR:", error);
+    console.error("=================================");
+    console.error("REGISTER ERROR");
+    console.error(error);
+    console.error("=================================");
 
     return res.status(500).json({
       success: false,
       message: "Server error during registration",
-      error:
-        process.env.NODE_ENV === "production"
-          ? undefined
-          : error.message,
     });
   }
 };
@@ -91,11 +103,14 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const {
-      email,
-      password,
-    } = req.body;
+    console.log("=================================");
+    console.log("LOGIN REQUEST");
+    console.log("Email:", req.body?.email);
+    console.log("=================================");
 
+    const { email, password } = req.body;
+
+    // Validate fields
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -103,21 +118,52 @@ const login = async (req, res) => {
       });
     }
 
+    // Check JWT secret
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing in environment variables");
+
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error",
+      });
+    }
+
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Find user
     const user = await User.findOne({
-      email: email.toLowerCase(),
+      email: normalizedEmail,
     });
 
     if (!user) {
+      console.log("User not found:", normalizedEmail);
+
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
 
+    console.log("User found:", user.email);
+
+    // Check password exists
+    if (!user.password) {
+      console.error("User password is missing in database");
+
+      return res.status(500).json({
+        success: false,
+        message: "User account data is invalid",
+      });
+    }
+
+    // Compare password
     const isPasswordValid = await bcrypt.compare(
       password,
       user.password
     );
+
+    console.log("Password valid:", isPasswordValid);
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -126,9 +172,10 @@ const login = async (req, res) => {
       });
     }
 
+    // Create JWT
     const token = jwt.sign(
       {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
       },
       process.env.JWT_SECRET,
@@ -136,6 +183,8 @@ const login = async (req, res) => {
         expiresIn: "7d",
       }
     );
+
+    console.log("Login successful:", user.email);
 
     return res.status(200).json({
       success: true,
@@ -150,7 +199,12 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
+    console.error("=================================");
+    console.error("LOGIN ERROR");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Full error:", error);
+    console.error("=================================");
 
     return res.status(500).json({
       success: false,
@@ -158,6 +212,10 @@ const login = async (req, res) => {
     });
   }
 };
+
+// ==========================================
+// EXPORT
+// ==========================================
 
 module.exports = {
   register,
