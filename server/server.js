@@ -10,60 +10,40 @@ dotenv.config();
 
 const app = express();
 
-// ==========================================
-// CORS
-// ==========================================
+/* =========================
+   CORS
+========================= */
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://madiguideai.vercel.app",
-  "https://madiguideai-git-main-vartikasingh04s-projects.vercel.app",
-  "https://madiguide-l2hyrgkt8-vartikasingh04s-projects.vercel.app",
-];
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://madiguideai.vercel.app",
+    "https://madiguideai-git-main-vartikasingh04s-projects.vercel.app",
+    "https://madiguide-l2hyrgkt8-vartikasingh04s-projects.vercel.app",
+  ],
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) {
-        return callback(null, true);
-      }
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+  ],
 
-      console.log("CORS blocked:", origin);
-      return callback(new Error("Not allowed by CORS"));
-    },
+  credentials: true,
+};
 
-    credentials: true,
+app.use(cors(corsOptions));
 
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS",
-    ],
-
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-    ],
-  })
-);
-
-// ==========================================
-// MIDDLEWARE
-// ==========================================
+/* =========================
+   BODY PARSER
+========================= */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ==========================================
-// HOME / HEALTH CHECK
-// ==========================================
+/* =========================
+   TEST
+========================= */
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -72,21 +52,16 @@ app.get("/", (req, res) => {
   });
 });
 
-// ==========================================
-// AUTH ROUTES
-// ==========================================
+/* =========================
+   ROUTES
+========================= */
 
 app.use("/api/auth", authRoutes);
-
-// ==========================================
-// ASSESSMENT ROUTES
-// ==========================================
-
 app.use("/api/assessment", assessmentRoutes);
 
-// ==========================================
-// 404
-// ==========================================
+/* =========================
+   404
+========================= */
 
 app.use((req, res) => {
   res.status(404).json({
@@ -96,19 +71,12 @@ app.use((req, res) => {
   });
 });
 
-// ==========================================
-// ERROR HANDLER
-// ==========================================
+/* =========================
+   ERROR HANDLER
+========================= */
 
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
-
-  if (err.message === "Not allowed by CORS") {
-    return res.status(403).json({
-      success: false,
-      message: "CORS policy blocked this request",
-    });
-  }
 
   res.status(500).json({
     success: false,
@@ -120,17 +88,23 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ==========================================
-// MONGODB
-// ==========================================
+/* =========================
+   PORT
+========================= */
 
 const PORT = process.env.PORT || 5000;
+
+/* =========================
+   DATABASE
+========================= */
 
 const connectDB = async () => {
   try {
     if (!process.env.MONGO_URI) {
       throw new Error("MONGO_URI is not defined");
     }
+
+    console.log("Connecting to MongoDB...");
 
     await mongoose.connect(process.env.MONGO_URI);
 
