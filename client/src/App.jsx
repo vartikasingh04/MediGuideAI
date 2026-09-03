@@ -10,6 +10,7 @@ import SymptomDetails from "./pages/SymptomDetails";
 import AssessmentResult from "./pages/AssessmentResult";
 import Emergency from "./pages/Emergency";
 import History from "./pages/History";
+import MedicalHelp from "./pages/MedicalHelp";
 
 function App() {
   return (
@@ -47,6 +48,11 @@ function App() {
 />
         {/* Unknown URL */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
+        <Route
+  path="/medical-help"
+  element={<MedicalHelp />}
+/>
 
       </Routes>
     </BrowserRouter>

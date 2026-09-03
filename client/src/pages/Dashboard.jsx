@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   Activity,
   ArrowRight,
@@ -69,7 +68,7 @@ function Dashboard() {
         }
 
        const response = await fetch(
-  `${API_URL}/api/assessments`,
+  `${API_URL}/api/assessment`,
   {
     method: "GET",
     headers: {

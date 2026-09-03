@@ -6,7 +6,9 @@ import {
   HeartPulse,
   UserRound,
 } from "lucide-react";
+
 import API_URL from "../api";
+
 function Symptoms() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -83,11 +85,8 @@ function Symptoms() {
         "mediGuideAssessmentId"
       );
 
-    console.log(
-      "Token exists:",
-      !!token
-    );
-
+    console.log("API URL:", API_URL);
+    console.log("Token exists:", !!token);
     console.log(
       "Assessment ID:",
       assessmentId
@@ -107,7 +106,7 @@ function Symptoms() {
     }
 
     // ------------------------------------------
-    // CHECK ASSESSMENT
+    // CHECK ASSESSMENT ID
     // ------------------------------------------
 
     if (!assessmentId) {
@@ -115,9 +114,7 @@ function Symptoms() {
         "Assessment ID not found. Please start the assessment again."
       );
 
-      window.location.href =
-        "/assessment";
-
+      window.location.href = "/assessment";
       return;
     }
 
@@ -130,56 +127,44 @@ function Symptoms() {
 
       localStorage.setItem(
         "mediGuideSymptoms",
-        JSON.stringify(
-          selectedSymptoms
-        )
+        JSON.stringify(selectedSymptoms)
       );
 
       // ----------------------------------------
       // API REQUEST
       // ----------------------------------------
 
-     const response = await fetch(
-  `http://localhost:5000/api/assessments/${assessmentId}/symptoms`,
+      const response = await fetch(
+        `${API_URL}/api/assessment/${assessmentId}/symptoms`,
         {
           method: "PUT",
 
           headers: {
-            "Content-Type":
-              "application/json",
-
-            Authorization:
-              `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify({
-            symptoms:
-              selectedSymptoms,
+            symptoms: selectedSymptoms,
           }),
         }
       );
 
       // ----------------------------------------
-      // CHECK RESPONSE TYPE
+      // RESPONSE TYPE
       // ----------------------------------------
 
       const contentType =
-        response.headers.get(
-          "content-type"
-        ) || "";
+        response.headers.get("content-type") || "";
 
       let data;
 
       if (
-        contentType.includes(
-          "application/json"
-        )
+        contentType.includes("application/json")
       ) {
-        data =
-          await response.json();
+        data = await response.json();
       } else {
-        const text =
-          await response.text();
+        const text = await response.text();
 
         console.error(
           "Server returned non-JSON response:",
@@ -201,9 +186,12 @@ function Symptoms() {
       // ----------------------------------------
 
       if (!response.ok) {
-        if (
-          response.status === 401
-        ) {
+        console.error(
+          "Symptoms API error:",
+          data
+        );
+
+        if (response.status === 401) {
           localStorage.removeItem(
             "mediGuideToken"
           );
@@ -216,9 +204,7 @@ function Symptoms() {
             "Your login session has expired. Please login again."
           );
 
-          window.location.href =
-            "/login";
-
+          window.location.href = "/login";
           return;
         }
 
@@ -251,8 +237,9 @@ function Symptoms() {
 
       alert(
         error.message ||
-          "Unable to save symptoms. Please make sure the backend server is running."
+          "Unable to save symptoms. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -282,7 +269,7 @@ function Symptoms() {
 
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
 
-          {/* Logo */}
+          {/* LOGO */}
 
           <button
             type="button"
@@ -314,7 +301,7 @@ function Symptoms() {
 
           </button>
 
-          {/* User Icon */}
+          {/* USER ICON */}
 
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
             <UserRound size={19} />
@@ -362,7 +349,7 @@ function Symptoms() {
 
         <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm md:p-10">
 
-          {/* Heading */}
+          {/* HEADING */}
 
           <div className="mb-8">
 
@@ -383,9 +370,7 @@ function Symptoms() {
 
           </div>
 
-          {/* ====================================
-              SELECTED COUNT
-          ==================================== */}
+          {/* SELECTED COUNT */}
 
           <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
 
@@ -403,9 +388,7 @@ function Symptoms() {
 
           </div>
 
-          {/* ====================================
-              SYMPTOMS
-          ==================================== */}
+          {/* SYMPTOMS */}
 
           <div className="grid gap-3 sm:grid-cols-2">
 
@@ -421,9 +404,7 @@ function Symptoms() {
                   key={symptom}
                   type="button"
                   onClick={() =>
-                    toggleSymptom(
-                      symptom
-                    )
+                    toggleSymptom(symptom)
                   }
                   className={`flex items-center justify-between rounded-xl border px-4 py-4 text-left transition ${
                     selected
@@ -439,9 +420,7 @@ function Symptoms() {
                   {selected && (
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white">
 
-                      <Check
-                        size={15}
-                      />
+                      <Check size={15} />
 
                     </span>
                   )}
@@ -452,13 +431,11 @@ function Symptoms() {
 
           </div>
 
-          {/* ====================================
-              NAVIGATION
-          ==================================== */}
+          {/* NAVIGATION */}
 
           <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-7">
 
-            {/* Back */}
+            {/* BACK */}
 
             <button
               type="button"
@@ -467,25 +444,20 @@ function Symptoms() {
               className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 disabled:opacity-50"
             >
 
-              <ArrowLeft
-                size={17}
-              />
+              <ArrowLeft size={17} />
 
               Back
 
             </button>
 
-            {/* Continue */}
+            {/* CONTINUE */}
 
             <button
               type="button"
-              onClick={
-                handleContinue
-              }
+              onClick={handleContinue}
               disabled={
                 loading ||
-                selectedSymptoms.length ===
-                  0
+                selectedSymptoms.length === 0
               }
               className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -495,9 +467,7 @@ function Symptoms() {
                 : "Continue"}
 
               {!loading && (
-                <ArrowRight
-                  size={17}
-                />
+                <ArrowRight size={17} />
               )}
 
             </button>
@@ -506,20 +476,15 @@ function Symptoms() {
 
         </div>
 
-        {/* ======================================
-            DISCLAIMER
-        ====================================== */}
+        {/* DISCLAIMER */}
 
         <div className="mt-6 rounded-xl border border-amber-100 bg-amber-50 p-4 text-center text-xs leading-5 text-amber-800">
 
-          <strong>
-            Important:
-          </strong>{" "}
-          This assessment provides general
-          health information and is not a
-          medical diagnosis. For severe or
-          emergency symptoms, seek professional
-          medical care immediately.
+          <strong>Important:</strong>{" "}
+          This assessment provides general health
+          information and is not a medical diagnosis.
+          For severe or emergency symptoms, seek
+          professional medical care immediately.
 
         </div>
 

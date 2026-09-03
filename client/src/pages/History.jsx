@@ -106,7 +106,7 @@ function History() {
         }
 
        const response = await fetch(
-  `${API_URL}/api/assessments`,
+  `${API_URL}/api/assessment`,
   {
     method: "GET",
     headers: {

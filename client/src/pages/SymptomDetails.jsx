@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import API_URL from "../api";
 import {
@@ -64,8 +65,7 @@ function SymptomDetails() {
         return [];
       }
 
-      const parsed =
-        JSON.parse(savedSymptoms);
+      const parsed = JSON.parse(savedSymptoms);
 
       return Array.isArray(parsed)
         ? parsed
@@ -86,7 +86,7 @@ function SymptomDetails() {
 
   const handleContinue = async () => {
     // ----------------------------------------
-    // TOKEN
+    // GET TOKEN
     // ----------------------------------------
 
     const token = getToken();
@@ -101,7 +101,7 @@ function SymptomDetails() {
     }
 
     // ----------------------------------------
-    // ASSESSMENT ID
+    // GET ASSESSMENT ID
     // ----------------------------------------
 
     const assessmentId =
@@ -112,9 +112,7 @@ function SymptomDetails() {
         "Assessment ID not found. Please start the assessment again."
       );
 
-      window.location.href =
-        "/assessment";
-
+      window.location.href = "/assessment";
       return;
     }
 
@@ -166,6 +164,17 @@ function SymptomDetails() {
 
       const symptoms = getSymptoms();
 
+      if (symptoms.length === 0) {
+        alert(
+          "No symptoms found. Please go back and select symptoms."
+        );
+
+        window.location.href =
+          "/assessment/symptoms";
+
+        return;
+      }
+
       // ----------------------------------------
       // CREATE DETAILS OBJECT
       // ----------------------------------------
@@ -195,20 +204,18 @@ function SymptomDetails() {
 
       localStorage.setItem(
         "mediGuideSymptomDetails",
-        JSON.stringify(
-          symptomDetails
-        )
+        JSON.stringify(symptomDetails)
       );
 
       // ----------------------------------------
-      // API URL
+      // CORRECT API URL
       // ----------------------------------------
 
       const url =
-  `${API_URL}/api/assessments/${assessmentId}/symptom-details`;
+        `${API_URL}/api/assessment/${assessmentId}/symptom-details`;
 
       console.log(
-        "API URL:",
+        "Symptom Details API URL:",
         url
       );
 
@@ -233,7 +240,7 @@ function SymptomDetails() {
       });
 
       // ----------------------------------------
-      // READ RESPONSE SAFELY
+      // READ RESPONSE
       // ----------------------------------------
 
       const contentType =
@@ -248,8 +255,7 @@ function SymptomDetails() {
           "application/json"
         )
       ) {
-        data =
-          await response.json();
+        data = await response.json();
       } else {
         const text =
           await response.text();
@@ -273,9 +279,7 @@ function SymptomDetails() {
       // AUTHENTICATION ERROR
       // ----------------------------------------
 
-      if (
-        response.status === 401
-      ) {
+      if (response.status === 401) {
         localStorage.removeItem(
           "mediGuideToken"
         );
@@ -296,14 +300,13 @@ function SymptomDetails() {
           "Your login session has expired. Please login again."
         );
 
-        window.location.href =
-          "/login";
+        window.location.href = "/login";
 
         return;
       }
 
       // ----------------------------------------
-      // OTHER ERROR
+      // OTHER API ERROR
       // ----------------------------------------
 
       if (!response.ok) {
@@ -322,7 +325,7 @@ function SymptomDetails() {
           "Symptom details saved successfully."
         );
 
-        // Save returned assessment too
+        // Save returned assessment
         if (data.assessment) {
           localStorage.setItem(
             "mediGuideAssessment",
@@ -344,6 +347,7 @@ function SymptomDetails() {
             "Unable to save symptom details."
         );
       }
+
     } catch (error) {
       console.error(
         "Symptom Details Error:",
@@ -352,8 +356,9 @@ function SymptomDetails() {
 
       alert(
         error.message ||
-          "Unable to save symptoms. Please make sure the backend server is running."
+          "Unable to save symptom details. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -492,7 +497,9 @@ function SymptomDetails() {
           <div className="mb-8">
 
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+
               <HeartPulse size={28} />
+
             </div>
 
             <h2 className="text-3xl font-bold text-gray-900">
@@ -512,9 +519,7 @@ function SymptomDetails() {
 
           <div className="space-y-8">
 
-            {/* ==================================
-                DURATION
-            ================================== */}
+            {/* DURATION */}
 
             <div>
 
@@ -547,9 +552,7 @@ function SymptomDetails() {
                     selected={
                       duration === option
                     }
-                    onClick={
-                      setDuration
-                    }
+                    onClick={setDuration}
                   />
 
                 ))}
@@ -558,9 +561,7 @@ function SymptomDetails() {
 
             </div>
 
-            {/* ==================================
-                SEVERITY
-            ================================== */}
+            {/* SEVERITY */}
 
             <div>
 
@@ -591,9 +592,7 @@ function SymptomDetails() {
                     selected={
                       severity === option
                     }
-                    onClick={
-                      setSeverity
-                    }
+                    onClick={setSeverity}
                   />
 
                 ))}
@@ -602,9 +601,7 @@ function SymptomDetails() {
 
             </div>
 
-            {/* ==================================
-                BREATHING DIFFICULTY
-            ================================== */}
+            {/* BREATHING DIFFICULTY */}
 
             <div>
 
@@ -646,9 +643,7 @@ function SymptomDetails() {
 
             </div>
 
-            {/* ==================================
-                UNCONSCIOUSNESS
-            ================================== */}
+            {/* UNCONSCIOUSNESS */}
 
             <div>
 
@@ -690,9 +685,7 @@ function SymptomDetails() {
 
             </div>
 
-            {/* ==================================
-                SEVERE BLEEDING
-            ================================== */}
+            {/* SEVERE BLEEDING */}
 
             <div>
 
@@ -734,9 +727,7 @@ function SymptomDetails() {
 
             </div>
 
-            {/* ==================================
-                NAVIGATION
-            ================================== */}
+            {/* NAVIGATION */}
 
             <div className="flex items-center justify-between border-t border-gray-100 pt-7">
 
@@ -755,9 +746,7 @@ function SymptomDetails() {
 
               <button
                 type="button"
-                onClick={
-                  handleContinue
-                }
+                onClick={handleContinue}
                 disabled={loading}
                 className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
@@ -767,9 +756,7 @@ function SymptomDetails() {
                   : "Continue"}
 
                 {!loading && (
-                  <ArrowRight
-                    size={17}
-                  />
+                  <ArrowRight size={17} />
                 )}
 
               </button>
@@ -780,9 +767,7 @@ function SymptomDetails() {
 
         </div>
 
-        {/* ======================================
-            DISCLAIMER
-        ====================================== */}
+        {/* DISCLAIMER */}
 
         <div className="mt-6 rounded-xl border border-amber-100 bg-amber-50 p-4 text-center text-xs leading-5 text-amber-800">
 
@@ -801,3 +786,4 @@ function SymptomDetails() {
 }
 
 export default SymptomDetails;
+
