@@ -10,20 +10,20 @@ dotenv.config();
 
 const app = express();
 
-// ===============================
-// CORS CONFIGURATION
-// ===============================
+// ==========================================
+// CORS
+// ==========================================
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://madiguideai.vercel.app",
+  "https://madiguideai-git-main-vartikasingh04s-projects.vercel.app",
+  "https://madiguide-l2hyrgkt8-vartikasingh04s-projects.vercel.app",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests without origin
-      // (Postman, server-to-server, etc.)
       if (!origin) {
         return callback(null, true);
       }
@@ -32,13 +32,20 @@ app.use(
         return callback(null, true);
       }
 
-      console.log("Blocked by CORS:", origin);
+      console.log("CORS blocked:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
 
     credentials: true,
 
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
 
     allowedHeaders: [
       "Content-Type",
@@ -47,16 +54,16 @@ app.use(
   })
 );
 
-// ===============================
+// ==========================================
 // MIDDLEWARE
-// ===============================
+// ==========================================
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ===============================
-// HEALTH CHECK
-// ===============================
+// ==========================================
+// HOME / HEALTH CHECK
+// ==========================================
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -65,16 +72,21 @@ app.get("/", (req, res) => {
   });
 });
 
-// ===============================
-// API ROUTES
-// ===============================
+// ==========================================
+// AUTH ROUTES
+// ==========================================
 
 app.use("/api/auth", authRoutes);
+
+// ==========================================
+// ASSESSMENT ROUTES
+// ==========================================
+
 app.use("/api/assessment", assessmentRoutes);
 
-// ===============================
-// 404 HANDLER
-// ===============================
+// ==========================================
+// 404
+// ==========================================
 
 app.use((req, res) => {
   res.status(404).json({
@@ -84,9 +96,9 @@ app.use((req, res) => {
   });
 });
 
-// ===============================
+// ==========================================
 // ERROR HANDLER
-// ===============================
+// ==========================================
 
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
@@ -108,9 +120,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ===============================
-// MONGODB CONNECTION
-// ===============================
+// ==========================================
+// MONGODB
+// ==========================================
 
 const PORT = process.env.PORT || 5000;
 
@@ -127,6 +139,7 @@ const connectDB = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+
   } catch (error) {
     console.error("MongoDB connection failed:");
     console.error(error.message);
